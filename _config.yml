@@ -1,0 +1,71 @@
+title: "Shreyas Segu"
+description: "Personal blog, resume, and projects"
+url: "https://shreyassegu.in"  # Do not include trailing slash
+baseurl: "/blog"               # This is key to mount the blog under /blog
+
+# Directory settings
+destination: _site
+permalink: /:year/:month/:day/:title/
+
+# Markdown processor
+markdown: kramdown
+kramdown:
+  input: GFM
+  syntax_highlighter: rouge
+
+# Build settings
+theme: null
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Exclude from build (optional, customize as needed)
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - README.md
+  - docker-compose.yml
+  - Dockerfile
+  - .github
+  - .gitignore
+  - .dockerignore
+
+# Defaults for layouts
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: page
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: post
+
+# Sitemap settings
+sitemap:
+  exclude:
+    - "/404.html"
+
+# Feed config (optional)
+feed:
+  path: feed.xml
+
+# SEO config (jekyll-seo-tag)
+seo:
+  type: "Blog"
+  name: "Shreyas Segu"
+  author:
+    name: "Shreyas Segu"
+  social:
+    name: "Shreyas Segu"
+    links:
+      - "https://github.com/yourhandle"
+      - "https://linkedin.com/in/yourhandle"
+
+tag_page_layout: tags
+tag_page_dir: tag

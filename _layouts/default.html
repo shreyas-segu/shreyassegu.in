@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
+    />
+    <link rel="stylesheet" href="{{ "/styles/syntax.css" | relative_url }}">
+    <title>{{ page.title }} | {{ site.title }}</title>
+    {% seo %}
+  </head>
+  <body>
+    <header>
+      <nav>
+        <ul>
+          <li><strong>Shreyas Segu</strong></li>
+        </ul>
+        <ul>
+          <li><a href="{{ '/' | relative_url }}">Home</a></li>
+          <li><a href="{{ '/blogs/' | relative_url }}">Blogs</a></li>
+          <li><a href="{{ '/about/' | relative_url }}">About</a></li>
+          <li><a href="{{ '/resume/' | relative_url }}">Resume</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main>{{ content }}</main>
+
+    <footer>
+      <p>&copy; {{ site.time | date: "%Y" }} {{ site.title }}</p>
+    </footer>
+  </body>
+</html>

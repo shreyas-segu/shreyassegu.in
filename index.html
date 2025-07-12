@@ -1,0 +1,11 @@
+---
+layout: default
+title: Home
+---
+
+<h1>Featured Posts</h1>
+<ul>
+  {% for post in site.posts limit:3 %}
+    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+  {% endfor %}
+</ul>
