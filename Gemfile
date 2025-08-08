@@ -7,3 +7,4 @@ gem "jekyll-seo-tag"
 gem "logger"
 gem "csv"
 gem "base64"
+gem 'jekyll-archives'

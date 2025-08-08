@@ -1,12 +1,39 @@
 ---
 layout: page
-title: Blog
+title: Blogs
 permalink: /blogs/
 ---
 
-<h1>All Posts</h1>
-<ul>
-  {% for post in site.posts %}
-    <li><a href="{{ post.url }}">{{ post.title }}</a></li>
-  {% endfor %}
-</ul>
+<div style="display: flex; flex-wrap: wrap; gap: 2rem">
+  <!-- Main content column (approx. 80%) -->
+  <main style="flex: 4; min-width: 320px">
+    {% for post in site.posts %}
+    <article>
+      <small
+        ><time datetime="{{ post.date | date_to_xmlschema }}"
+          >{{ post.date | date: "%B %d, %Y" }}</time
+        ></small
+      >
+      <h3><a href="{{ post.url | relative_url}}">{{ post.title }}</a></h3>
+      <p>{{ post.description }}</p>
+    </article>
+    {% endfor %}
+  </main>
+
+  <!-- Sidebar column (approx. 20%) -->
+  <aside style="flex: 1; min-width: 200px">
+    <section aria-labelledby="tags-heading">
+      <h3 id="tags-heading">Filter by topic</h3>
+      <nav aria-label="Blog tags">
+        {% for tag in site.tags %}
+        <a
+          href="{{ '/tags/' | append: tag[0] | append: '/' | relative_url }}"
+          style="display: block; margin-bottom: 0.5rem"
+        >
+          #{{ tag[0] }} ({{ tag[1].size }})
+        </a>
+        {% endfor %}
+      </nav>
+    </section>
+  </aside>
+</div>

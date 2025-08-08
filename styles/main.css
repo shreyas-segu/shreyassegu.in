@@ -1,0 +1,55 @@
+/* Custom site-wide styles */
+
+/* Remove underline from post title links */
+article h3 a {
+  text-decoration: none;
+}
+
+/* Add underline back on hover */
+article h3 a:hover {
+  text-decoration: underline;
+}
+
+/* Remove link styling from the site title/brand in the navbar */
+nav a.brand,
+nav a.brand:hover {
+  text-decoration: none;
+  color: inherit;
+  background-color: transparent; /* Prevents Pico.css from adding a background on hover */
+}
+
+/* Footer styles */
+footer .footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+footer .footer-container p {
+  margin: 0; /* Remove default paragraph margin */
+}
+
+footer .social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+footer .social-links a {
+  /* Use Pico's secondary color for the icon */
+  color: var(--pico-secondary);
+  transition: color 0.2s ease-in-out;
+}
+
+footer .social-links a:hover {
+  /* Use Pico's primary color for the icon on hover */
+  color: var(--pico-primary);
+}
+
+.social-icon {
+  height: 1.25rem; /* Adjust size as needed */
+  width: auto;
+  fill: currentColor; /* This makes the SVG inherit the color from its parent <a> tag */
+}

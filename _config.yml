@@ -19,6 +19,7 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
+  - jekyll-archives
 
 # Exclude from build (optional, customize as needed)
 exclude:
@@ -64,8 +65,14 @@ seo:
   social:
     name: "Shreyas Segu"
     links:
-      - "https://github.com/yourhandle"
-      - "https://linkedin.com/in/yourhandle"
+      - "https://github.com/shreyas-segu"
+      - "https://linkedin.com/in/shreyassegu"
 
-tag_page_layout: tags
-tag_page_dir: tag
+# Jekyll Archives
+jekyll-archives:
+  enabled:
+    - tags
+  layouts:
+    tag: tag_page
+  permalinks:
+    tag: '/tags/:name/'

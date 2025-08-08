@@ -3,9 +3,50 @@ layout: default
 title: Home
 ---
 
-<h1>Featured Posts</h1>
-<ul>
+<section>
+  <h1>Hey, I'm Shreyas!</h1>
+  <p>
+    I'm a software engineer who loves building systems, writing clean code, and
+    spending an unhealthy amount of time automating things that don't really
+    need automating. If a task takes 2 minutes manually, I'll happily burn an
+    entire evening scripting it, not because it's efficient, but because I can
+    (and because cron jobs spark more joy than spreadsheets ever will).
+  </p>
+  <p>
+    I have a long list of side projects, most of them half-finished, some
+    abandoned, and a few I'm still pretending I'll complete "soon." I care about
+    good architecture, dev tools, and backend systems that scale without
+    becoming a dumpster fire. I've been down the rabbit hole of Linux servers,
+    self-hosting, homelabbing, and breaking my local network more times than I'd
+    like to admit.
+  </p>
+  <p>
+    Outside of tech, I'm usually off exploring offbeat places with friends,
+    binging anime, or fiddling with computer hardware I don't need but somehow
+    convince myself I do.
+  </p>
+  <p>
+    This blog is where I dump my thoughts, tech notes, rants, ideas, things I've
+    learnt (or broken), and maybe the occasional project that actually made it
+    past version 0.1. If that sounds like your kind of chaos, you're in the
+    right place.
+  </p>
+</section>
+
+<hr />
+
+<section>
+  <h3>Recent Posts</h3>
   {% for post in site.posts limit:3 %}
-    <li><a href="{{ post.url | relative_url }}">{{ post.title }}</a></li>
+  <article>
+    <small>
+      <time datetime="{{ post.date | date_to_xmlschema }}">
+        {{ post.date | date: "%B %d, %Y" }}
+      </time>
+    </small>
+    <h3><a href="{{ post.url | relative_url }}">{{ post.title }}</a></h3>
+    <p>{{ post.description }}</p>
+  </article>
   {% endfor %}
-</ul>
+  <a href="{{ '/blogs/' | relative_url }}">View all posts</a> &rarr;
+</section>

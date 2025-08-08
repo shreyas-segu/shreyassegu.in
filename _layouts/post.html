@@ -1,14 +1,25 @@
 ---
 layout: default
 ---
-<h1>{{ page.title }}</h1>
-<p><small>{{ page.date | date: "%B %d, %Y" }}</small></p>
-{{ content }}
-{% if page.tags %}
-<p>Tags:
-  {% for tag in page.tags %}
-    <a href="{{ '/tag/' | append: tag | append: '/' | relative_url }}">{{ tag }}</a>{% unless forloop.last %}, {% endunless %}
-  {% endfor %}
-</p>
-{% endif %}
 
+<header>
+  <nav aria-label="Breadcrumb" style="margin-bottom: 2rem">
+    <small>&larr; <a href="{{ '/blogs/' | relative_url }}">All posts</a></small>
+  </nav>
+  <h1>{{ page.title }}</h1>
+  <p>
+    <small>
+      Published on
+      <time datetime="{{ page.date | date_to_xmlschema }}"
+        >{{ page.date | date: "%B %d, %Y" }}</time
+      >
+      {% if page.tags.size > 0 %} &nbsp;&bull;&nbsp; Tags: {% for tag in
+      page.tags %}<a
+        href="{{ '/tags/' | append: tag | append: '/' | relative_url }}"
+        >#{{ tag }}</a
+      >{% unless forloop.last %}, {% endunless %}{% endfor %} {% endif %}
+    </small>
+  </p>
+</header>
+
+{{ content }}

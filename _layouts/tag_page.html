@@ -1,0 +1,23 @@
+---
+layout: default
+---
+
+<header>
+  <h1>Posts related to '{{ page.title }}'</h1>
+  <p>
+    &larr; <a href="{{ '/blogs/' | relative_url }}">All Posts</a> |
+    <a href="{{ '/tags/' | relative_url }}">All Topics</a>
+  </p>
+</header>
+
+{% for post in page.posts %}
+<article>
+  <small
+    ><time datetime="{{ post.date | date_to_xmlschema }}"
+      >{{ post.date | date: "%B %d, %Y" }}</time
+    ></small
+  >
+  <h3><a href="{{ post.url | relative_url}}">{{ post.title }}</a></h3>
+  <p>{{ post.description }}</p>
+</article>
+{% endfor %}
