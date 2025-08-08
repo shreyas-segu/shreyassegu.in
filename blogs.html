@@ -7,7 +7,8 @@ permalink: /blogs/
 <div style="display: flex; flex-wrap: wrap; gap: 2rem">
   <!-- Main content column (approx. 80%) -->
   <main style="flex: 4; min-width: 320px">
-    {% for post in site.posts %}
+    {% assign listed_posts = site.posts | where_exp:"post", "post.listed != false" %}
+    {% for post in listed_posts %}
     <article>
       <small
         ><time datetime="{{ post.date | date_to_xmlschema }}"
@@ -26,12 +27,16 @@ permalink: /blogs/
       <h3 id="tags-heading">Filter by topic</h3>
       <nav aria-label="Blog tags">
         {% for tag in site.tags %}
-        <a
-          href="{{ '/tags/' | append: tag[0] | append: '/' | relative_url }}"
-          style="display: block; margin-bottom: 0.5rem"
-        >
-          #{{ tag[0] }} ({{ tag[1].size }})
-        </a>
+          {% assign tagged_posts = tag[1] %}
+          {% assign listed_tagged_posts = tagged_posts | where_exp:"post", "post.listed != false" %}
+          {% if listed_tagged_posts.size > 0 %}
+            <a
+              href="{{ '/tags/' | append: tag[0] | append: '/' | relative_url }}"
+              style="display: block; margin-bottom: 0.5rem"
+            >
+              #{{ tag[0] }} ({{ listed_tagged_posts.size }})
+            </a>
+          {% endif %}
         {% endfor %}
       </nav>
     </section>

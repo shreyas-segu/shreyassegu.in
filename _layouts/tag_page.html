@@ -10,7 +10,8 @@ layout: default
   </p>
 </header>
 
-{% for post in page.posts %}
+{% assign listed_posts = page.posts | where_exp:"post", "post.listed != false" %}
+{% for post in listed_posts %}
 <article>
   <small
     ><time datetime="{{ post.date | date_to_xmlschema }}"

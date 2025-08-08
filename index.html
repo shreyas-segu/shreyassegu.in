@@ -37,7 +37,8 @@ title: Home
 
 <section>
   <h3>Recent Posts</h3>
-  {% for post in site.posts limit:3 %}
+  {% assign recent_posts = site.posts | where_exp:"post", "post.listed != false" %}
+  {% for post in recent_posts limit:3 %}
   <article>
     <small>
       <time datetime="{{ post.date | date_to_xmlschema }}">

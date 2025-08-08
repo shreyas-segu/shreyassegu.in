@@ -5,7 +5,7 @@ baseurl: "/blog"               # This is key to mount the blog under /blog
 
 # Directory settings
 destination: _site
-permalink: /:year/:month/:day/:title/
+permalink: /:title/
 
 # Markdown processor
 markdown: kramdown
@@ -76,3 +76,13 @@ jekyll-archives:
     tag: tag_page
   permalinks:
     tag: '/tags/:name/'
+
+# Pagination Settings
+pagination:
+  enabled: true
+  per_page: 5
+  permalink: '/page/:num/'
+  title: ':title - page :num'
+  limit: 0
+  sort_field: 'date'
+  sort_reverse: true
