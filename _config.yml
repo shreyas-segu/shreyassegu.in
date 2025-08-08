@@ -1,7 +1,7 @@
 title: "Shreyas Segu"
 description: "Personal blog, resume, and projects"
 url: "https://shreyassegu.in"  # Do not include trailing slash
-baseurl: "/blog"               # This is key to mount the blog under /blog
+baseurl: "/"
 
 # Directory settings
 destination: _site
