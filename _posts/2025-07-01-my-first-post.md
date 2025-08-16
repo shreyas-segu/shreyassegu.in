@@ -3,6 +3,7 @@ title: "My First Post"
 date: 2025-07-01
 tags: ["markdown", "jekyll"]
 description: "A sample post showcasing all the Markdown elements for styling purposes."
+listed: false
 ---
 
 This post is a "kitchen sink" of all the possible Markdown elements you might use in a blog post. It's designed to help with styling and ensuring everything looks great.
