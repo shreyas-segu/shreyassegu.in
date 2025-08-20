@@ -42,7 +42,7 @@ From here on, everything revolves around the SSH config file.
 
 We can create aliases for frequently accessed servers. Example:  
 
-```
+```sh
 Host accounta-dev-us-west
   HostName your-very-long-dns.com
 
@@ -58,21 +58,17 @@ Host accountb-prod-eu-east
 
 Now you can simply run:  
 
-```
-
+```sh
 ssh accounta-dev-us-west
-
 ```
 
 You can also add usernames and keys per host:  
 
-```
-
+```sh
 Host accounta-dev-us-west
   HostName your-very-long-dns.com
   User login-username
   IdentityFile ~/.ssh/id_ed25519
-
 ```
 
 So far: aliases + key-based auth = fast, painless bastion access.  
@@ -95,9 +91,9 @@ Host app-server
   User app-user
   ProxyJump accounta-dev-us-west
   IdentityFile ~/.ssh/app-server-key.pub
-````
-
 ```
+
+```sh
 ssh app-server
 ```
 
@@ -136,7 +132,7 @@ Host cassandra-accounta-dev-us-west
 
 Run it like this:
 
-```
+```sh
 ssh -N cassandra-accounta-dev-us-west
 ```
 
