@@ -53,3 +53,7 @@ footer .social-links a:hover {
   width: auto;
   fill: currentColor; /* This makes the SVG inherit the color from its parent <a> tag */
 }
+
+@view-transition {
+  navigation: auto;
+}
