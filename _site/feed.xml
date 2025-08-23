@@ -1,0 +1,540 @@
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://0.0.0.0:4000/feed.xml" rel="self" type="application/atom+xml" /><link href="http://0.0.0.0:4000/" rel="alternate" type="text/html" /><updated>2025-08-23T12:24:08+00:00</updated><id>http://0.0.0.0:4000/feed.xml</id><title type="html">Shreyas Segu</title><subtitle>Personal blog, resume, and projects</subtitle><entry><title type="html">The Joy of Using SSH</title><link href="http://0.0.0.0:4000/the-joy-of-using-ssh/" rel="alternate" type="text/html" title="The Joy of Using SSH" /><published>2025-08-16T00:00:00+00:00</published><updated>2025-08-16T00:00:00+00:00</updated><id>http://0.0.0.0:4000/the-joy-of-using-ssh</id><content type="html" xml:base="http://0.0.0.0:4000/the-joy-of-using-ssh/"><![CDATA[<p>When I first started working, I had to SSH into servers all the time — checking logs, restarting services, changing configurations, you name it.<br />
+To do that, we had to go through a bastion server first, and only then hop into the actual application servers. As a fresh graduate, I naturally looked around to see how my colleagues were managing this.</p>
+
+<p>The answer? A <strong>Notepad++ tab</strong> with all the commands, copy-pasted into the terminal.<br />
+Every bastion login needed our Active Directory password. We had multiple SSH keys — some for infrastructure, some for applications — which we had to copy over manually, either via <code class="language-plaintext highlighter-rouge">scp</code> or by creating files directly on the bastion. And of course, the first attempt always failed because the key permissions were too open. Then came the guessing game of which <code class="language-plaintext highlighter-rouge">chmod</code> permissions were needed. Finally — we’re in.</p>
+
+<p>And if Infosec or DevOps decided to replace the bastion servers? We had to do it all over again. To make things worse, during an AWS account migration, we ended up with almost 10 different bastions. You get the picture — lots of wasted time. And in production incidents, under pressure, this workflow just wasn’t sustainable.</p>
+
+<p>For my own sanity, I had to fix this.</p>
+
+<hr />
+
+<h2 id="problems-and-solutions">Problems and Solutions</h2>
+
+<h3 id="problem-entering-the-bastion-password-every-time">Problem: Entering the bastion password every time</h3>
+<p><strong>Solution: Use SSH keys</strong></p>
+
+<p>The SSH protocol is brilliant — generate a personal public/private key pair, and with the magic of asymmetric cryptography, everything just works.<br />
+You can even use the same keys for GitHub/Bitbucket to clone repos over SSH.</p>
+
+<p>Steps (high-level):</p>
+<ul>
+  <li>Generate an SSH keypair</li>
+  <li>Add it to your SSH agent</li>
+  <li>Install it on your server with <code class="language-plaintext highlighter-rouge">ssh-copy-id</code></li>
+</ul>
+
+<p>Voilà — no more typing credentials every time you connect.</p>
+
+<hr />
+
+<h3 id="problem-bastion-server-dns-names-are-impossible-to-remember">Problem: Bastion server DNS names are impossible to remember</h3>
+<p><strong>Solution: SSH config file</strong></p>
+
+<p>From here on, everything revolves around the SSH config file.</p>
+
+<p>We can create aliases for frequently accessed servers. Example:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host accounta-dev-us-west
+  HostName your-very-long-dns.com
+
+Host accounta-dev-eu-east
+  HostName your-very-long-dns.com
+
+Host accountb-prod-us-west
+  HostName your-very-long-dns.com
+
+Host accountb-prod-eu-east
+  HostName your-very-long-dns.com
+</code></pre></div></div>
+
+<p>Now you can simply run:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh accounta-dev-us-west
+</code></pre></div></div>
+
+<p>You can also add usernames and keys per host:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host accounta-dev-us-west
+  HostName your-very-long-dns.com
+  User login-username
+  IdentityFile ~/.ssh/id_ed25519
+</code></pre></div></div>
+
+<p>So far: aliases + key-based auth = fast, painless bastion access.</p>
+
+<hr />
+
+<h3 id="problem-copying-keys-to-servers-is-a-pain-and-insecure">Problem: Copying keys to servers is a pain (and insecure)</h3>
+<p><strong>Solution: ProxyJump</strong></p>
+
+<p>Instead of copying keys to bastions, keep them on your machine and hop through the bastion using <code class="language-plaintext highlighter-rouge">ProxyJump</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host accounta-dev-us-west
+  HostName your-very-long-dns.com
+  User login-username
+  IdentityFile ~/.ssh/id_ed25519
+
+Host app-server
+  HostName app-server-ip
+  User app-user
+  ProxyJump accounta-dev-us-west
+  IdentityFile ~/.ssh/app-server-key.pub
+</code></pre></div></div>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh app-server
+</code></pre></div></div>
+
+<p>This way, your keys never leave your machine, and you avoid long <code class="language-plaintext highlighter-rouge">ssh</code> commands and constant permission issues.</p>
+
+<hr />
+
+<h3 id="problem-application-server-ips-keep-changing">Problem: Application server IPs keep changing</h3>
+
+<p><strong>Solution: Override with <code class="language-plaintext highlighter-rouge">-o</code></strong></p>
+
+<p>If you don’t have DNS entries or your servers keep getting redeployed, override <code class="language-plaintext highlighter-rouge">HostName</code> at runtime:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh app-server <span class="nt">-o</span> <span class="s1">'HostName=172.168.2.3'</span>
+</code></pre></div></div>
+
+<hr />
+
+<h3 id="problem-database-servers-only-accessible-via-ssh-tunnel">Problem: Database servers only accessible via SSH tunnel</h3>
+
+<p><strong>Solution: LocalForward</strong></p>
+
+<p>All our DBs were behind bastions, requiring SSH tunnels. Sure, you can configure tunnels directly in tools like DBeaver or TablePlus, but doing that across 10 bastions — and across multiple tools — is messy.</p>
+
+<p>Instead, configure the tunnel in your SSH config:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Host cassandra-accounta-dev-us-west
+  HostName your-very-long-dns.com
+  User login-username
+  IdentityFile ~/.ssh/id_ed25519
+  LocalForward 9042 cassandra-node.dev.example.com:9042
+  RequestTTY no
+</code></pre></div></div>
+
+<p>Run it like this:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh <span class="nt">-N</span> cassandra-accounta-dev-us-west
+</code></pre></div></div>
+
+<p>Now, your DB client just connects to <code class="language-plaintext highlighter-rouge">localhost:9042</code>. Clean and simple.</p>
+
+<p>(I tried reusing the bastion config with ProxyJump for tunnels, but couldn’t get it working cleanly. If you figure that out, let me know!)</p>
+
+<hr />
+
+<h2 id="wrapping-up">Wrapping Up</h2>
+
+<p>That’s how I turned SSH from a painful chore into something I actually enjoy using.</p>
+
+<p>Here are some resources I leaned on while figuring this out (written by people far more capable than me, and worth reading as guides):</p>
+
+<ul>
+  <li><a href="https://www.ssh.com/academy/ssh/config">SSH Config — ssh.com</a></li>
+  <li><a href="https://linuxize.com/post/using-the-ssh-config-file/">Using the SSH Config File — linuxize.com</a></li>
+</ul>
+
+<p>I also leaned on ChatGPT quite a bit — for asking configuration questions and even to help edit this article.</p>
+
+<p>If you have improvements, suggestions, or cool SSH tricks of your own, reach out! I’d love to learn from how others are using SSH configs in their workflows.</p>]]></content><author><name></name></author><category term="SSH" /><category term="Productivity" /><category term="Linux" /><summary type="html"><![CDATA[A walkthrough of my SSH workflow, why it feels good to use, and some resources if you want to dive deeper.]]></summary></entry><entry><title type="html">My Second Post</title><link href="http://0.0.0.0:4000/my-second-post/" rel="alternate" type="text/html" title="My Second Post" /><published>2025-08-04T00:00:00+00:00</published><updated>2025-08-04T00:00:00+00:00</updated><id>http://0.0.0.0:4000/my-second-post</id><content type="html" xml:base="http://0.0.0.0:4000/my-second-post/"><![CDATA[<p>This post is a “kitchen sink” of all the possible Markdown elements you might use in a blog post. It’s designed to help with styling and ensuring everything looks great.</p>
+
+<h2 id="headings">Headings</h2>
+
+<h1 id="heading-1">Heading 1</h1>
+<h2 id="heading-2">Heading 2</h2>
+<h3 id="heading-3">Heading 3</h3>
+<h4 id="heading-4">Heading 4</h4>
+<h5 id="heading-5">Heading 5</h5>
+<h6 id="heading-6">Heading 6</h6>
+
+<hr />
+
+<h2 id="paragraphs-and-text-styles">Paragraphs and Text Styles</h2>
+
+<p>This is a standard paragraph. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+<p>Here is some <strong>bold text</strong>, some <em>italic text</em>, and some <strong><em>bold and italic text</em></strong>. You can also use <code class="language-plaintext highlighter-rouge">_</code> for italics like <em>this</em> and <code class="language-plaintext highlighter-rouge">__</code> for bold like <strong>this</strong>.</p>
+
+<p>For inline code, you can use backticks: <code class="language-plaintext highlighter-rouge">const example = 'hello world';</code>.</p>
+
+<p>Sometimes you want to strike through text, like <del>this</del>.</p>
+
+<hr />
+
+<h2 id="blockquotes">Blockquotes</h2>
+
+<blockquote>
+  <p>“The only way to do great work is to love what you do.”</p>
+
+  <p>– Steve Jobs</p>
+</blockquote>
+
+<p>Blockquotes can also be nested:</p>
+<blockquote>
+  <p>This is the first level of quoting.</p>
+
+  <blockquote>
+    <p>This is nested blockquote.</p>
+  </blockquote>
+
+  <p>Back to the first level.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="lists">Lists</h2>
+
+<h3 id="unordered-list">Unordered List</h3>
+
+<ul>
+  <li>Item 1</li>
+  <li>Item 2
+    <ul>
+      <li>Nested Item 2.1</li>
+      <li>Nested Item 2.2</li>
+    </ul>
+  </li>
+  <li>Item 3</li>
+</ul>
+
+<h3 id="ordered-list">Ordered List</h3>
+
+<ol>
+  <li>First item</li>
+  <li>Second item</li>
+  <li>Third item
+    <ol>
+      <li>Sub-item A</li>
+      <li>Sub-item B</li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="task-list-github-flavored-markdown">Task List (GitHub Flavored Markdown)</h3>
+
+<ul class="task-list">
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Complete task 1</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Complete task 2</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Incomplete task 3</li>
+</ul>
+
+<hr />
+
+<h2 id="code-blocks">Code Blocks</h2>
+
+<p>Syntax highlighting is handled by Rouge. Here are a few examples.</p>
+
+<h3 id="javascript">JavaScript</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// A simple function to add two numbers</span>
+<span class="kd">function</span> <span class="nf">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nf">add</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span> <span class="c1">// Outputs: 15</span>
+</code></pre></div></div>
+
+<h3 id="python">Python</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A simple list comprehension
+</span><span class="n">squares</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">squares</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="shellbash">Shell/Bash</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># List files in the current directory</span>
+<span class="nb">ls</span> <span class="nt">-la</span>
+
+<span class="c"># Echo a message</span>
+<span class="nb">echo</span> <span class="s2">"Hello from the shell!"</span>
+</code></pre></div></div>
+
+<h3 id="ruby-jekylls-language">Ruby (Jekyll’s language)</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A simple Ruby class</span>
+<span class="k">class</span> <span class="nc">Greeter</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span><span class="p">.</span><span class="nf">capitalize</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">salute</span>
+    <span class="nb">puts</span> <span class="s2">"Hello </span><span class="si">#{</span><span class="vi">@name</span><span class="si">}</span><span class="s2">!"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="no">Greeter</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"world"</span><span class="p">)</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">salute</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="horizontal-rule">Horizontal Rule</h2>
+
+<h2 id="youve-seen-them-a-few-times-already-they-are-created-with-three-or-more-hyphens-asterisks-or-underscores">You’ve seen them a few times already. They are created with three or more hyphens, asterisks, or underscores.</h2>
+
+<h2 id="links-and-images">Links and Images</h2>
+
+<h3 id="links">Links</h3>
+
+<p>Here is a link to the <a href="https://jekyllrb.com/">Jekyll website</a>. You can also have a link with a title: <a href="https://picocss.com" title="A minimalist CSS framework">Pico.css</a>.</p>
+
+<h3 id="images">Images</h3>
+
+<p>To display an image from your project files, you first need to create a folder for them, like <code class="language-plaintext highlighter-rouge">assets/images/</code>. Place your image file in that directory. Then, you can reference it in your markdown like this:</p>
+
+<p><img src="//assets/images/kitchen-sink.png" alt="A sample image for the kitchen sink post" /></p>
+
+<hr />
+
+<h2 id="tables">Tables</h2>
+
+<p>Tables are great for structured data.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Header 1</th>
+      <th style="text-align: center">Header 2</th>
+      <th style="text-align: right">Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Left-aligned</td>
+      <td style="text-align: center">Centered</td>
+      <td style="text-align: right">Right-aligned</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Cell content</td>
+      <td style="text-align: center"><em>this is</em></td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">code</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Cell content</td>
+      <td style="text-align: center"><strong>centered</strong></td>
+      <td style="text-align: right">and this</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="footnotes">Footnotes</h2>
+
+<p>Here is a sentence with a footnote.<sup id="fnref:1"><a href="#fn:1" class="footnote" rel="footnote" role="doc-noteref">1</a></sup> And here is another one.<sup id="fnref:2"><a href="#fn:2" class="footnote" rel="footnote" role="doc-noteref">2</a></sup></p>
+
+<p>That’s a wrap! This should cover most of the elements you’ll need to style.</p>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1">
+      <p>This is the first footnote. It’s a kramdown feature. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p>This is the second footnote. It can contain <strong>formatted</strong> text. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name></name></author><category term="test" /><category term="jekyll" /><summary type="html"><![CDATA[A sample post showcasing all the Markdown elements for styling purposes. 2]]></summary></entry><entry><title type="html">My First Post</title><link href="http://0.0.0.0:4000/my-first-post/" rel="alternate" type="text/html" title="My First Post" /><published>2025-07-01T00:00:00+00:00</published><updated>2025-07-01T00:00:00+00:00</updated><id>http://0.0.0.0:4000/my-first-post</id><content type="html" xml:base="http://0.0.0.0:4000/my-first-post/"><![CDATA[<p>This post is a “kitchen sink” of all the possible Markdown elements you might use in a blog post. It’s designed to help with styling and ensuring everything looks great.</p>
+
+<h2 id="headings">Headings</h2>
+
+<h1 id="heading-1">Heading 1</h1>
+<h2 id="heading-2">Heading 2</h2>
+<h3 id="heading-3">Heading 3</h3>
+<h4 id="heading-4">Heading 4</h4>
+<h5 id="heading-5">Heading 5</h5>
+<h6 id="heading-6">Heading 6</h6>
+
+<hr />
+
+<h2 id="paragraphs-and-text-styles">Paragraphs and Text Styles</h2>
+
+<p>This is a standard paragraph. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+
+<p>Here is some <strong>bold text</strong>, some <em>italic text</em>, and some <strong><em>bold and italic text</em></strong>. You can also use <code class="language-plaintext highlighter-rouge">_</code> for italics like <em>this</em> and <code class="language-plaintext highlighter-rouge">__</code> for bold like <strong>this</strong>.</p>
+
+<p>For inline code, you can use backticks: <code class="language-plaintext highlighter-rouge">const example = 'hello world';</code>.</p>
+
+<p>Sometimes you want to strike through text, like <del>this</del>.</p>
+
+<hr />
+
+<h2 id="blockquotes">Blockquotes</h2>
+
+<blockquote>
+  <p>“The only way to do great work is to love what you do.”</p>
+
+  <p>– Steve Jobs</p>
+</blockquote>
+
+<p>Blockquotes can also be nested:</p>
+<blockquote>
+  <p>This is the first level of quoting.</p>
+
+  <blockquote>
+    <p>This is nested blockquote.</p>
+  </blockquote>
+
+  <p>Back to the first level.</p>
+</blockquote>
+
+<hr />
+
+<h2 id="lists">Lists</h2>
+
+<h3 id="unordered-list">Unordered List</h3>
+
+<ul>
+  <li>Item 1</li>
+  <li>Item 2
+    <ul>
+      <li>Nested Item 2.1</li>
+      <li>Nested Item 2.2</li>
+    </ul>
+  </li>
+  <li>Item 3</li>
+</ul>
+
+<h3 id="ordered-list">Ordered List</h3>
+
+<ol>
+  <li>First item</li>
+  <li>Second item</li>
+  <li>Third item
+    <ol>
+      <li>Sub-item A</li>
+      <li>Sub-item B</li>
+    </ol>
+  </li>
+</ol>
+
+<h3 id="task-list-github-flavored-markdown">Task List (GitHub Flavored Markdown)</h3>
+
+<ul class="task-list">
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Complete task 1</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" checked="checked" />Complete task 2</li>
+  <li class="task-list-item"><input type="checkbox" class="task-list-item-checkbox" disabled="disabled" />Incomplete task 3</li>
+</ul>
+
+<hr />
+
+<h2 id="code-blocks">Code Blocks</h2>
+
+<p>Syntax highlighting is handled by Rouge. Here are a few examples.</p>
+
+<h3 id="javascript">JavaScript</h3>
+
+<div class="language-javascript highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1">// A simple function to add two numbers</span>
+<span class="kd">function</span> <span class="nf">add</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nf">log</span><span class="p">(</span><span class="nf">add</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">));</span> <span class="c1">// Outputs: 15</span>
+</code></pre></div></div>
+
+<h3 id="python">Python</h3>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A simple list comprehension
+</span><span class="n">squares</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">**</span><span class="mi">2</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nf">range</span><span class="p">(</span><span class="mi">10</span><span class="p">)]</span>
+<span class="nf">print</span><span class="p">(</span><span class="n">squares</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="shellbash">Shell/Bash</h3>
+
+<div class="language-shell highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># List files in the current directory</span>
+<span class="nb">ls</span> <span class="nt">-la</span>
+
+<span class="c"># Echo a message</span>
+<span class="nb">echo</span> <span class="s2">"Hello from the shell!"</span>
+</code></pre></div></div>
+
+<h3 id="ruby-jekylls-language">Ruby (Jekyll’s language)</h3>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># A simple Ruby class</span>
+<span class="k">class</span> <span class="nc">Greeter</span>
+  <span class="k">def</span> <span class="nf">initialize</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
+    <span class="vi">@name</span> <span class="o">=</span> <span class="nb">name</span><span class="p">.</span><span class="nf">capitalize</span>
+  <span class="k">end</span>
+
+  <span class="k">def</span> <span class="nf">salute</span>
+    <span class="nb">puts</span> <span class="s2">"Hello </span><span class="si">#{</span><span class="vi">@name</span><span class="si">}</span><span class="s2">!"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+
+<span class="n">g</span> <span class="o">=</span> <span class="no">Greeter</span><span class="p">.</span><span class="nf">new</span><span class="p">(</span><span class="s2">"world"</span><span class="p">)</span>
+<span class="n">g</span><span class="p">.</span><span class="nf">salute</span>
+</code></pre></div></div>
+
+<hr />
+
+<h2 id="horizontal-rule">Horizontal Rule</h2>
+
+<h2 id="youve-seen-them-a-few-times-already-they-are-created-with-three-or-more-hyphens-asterisks-or-underscores">You’ve seen them a few times already. They are created with three or more hyphens, asterisks, or underscores.</h2>
+
+<h2 id="links-and-images">Links and Images</h2>
+
+<h3 id="links">Links</h3>
+
+<p>Here is a link to the <a href="https://jekyllrb.com/">Jekyll website</a>. You can also have a link with a title: <a href="https://picocss.com" title="A minimalist CSS framework">Pico.css</a>.</p>
+
+<h3 id="images">Images</h3>
+
+<p>To display an image from your project files, you first need to create a folder for them, like <code class="language-plaintext highlighter-rouge">assets/images/</code>. Place your image file in that directory. Then, you can reference it in your markdown like this:</p>
+
+<p><img src="//assets/images/kitchen-sink.png" alt="A sample image for the kitchen sink post" /></p>
+
+<hr />
+
+<h2 id="tables">Tables</h2>
+
+<p>Tables are great for structured data.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th style="text-align: left">Header 1</th>
+      <th style="text-align: center">Header 2</th>
+      <th style="text-align: right">Header 3</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style="text-align: left">Left-aligned</td>
+      <td style="text-align: center">Centered</td>
+      <td style="text-align: right">Right-aligned</td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Cell content</td>
+      <td style="text-align: center"><em>this is</em></td>
+      <td style="text-align: right"><code class="language-plaintext highlighter-rouge">code</code></td>
+    </tr>
+    <tr>
+      <td style="text-align: left">Cell content</td>
+      <td style="text-align: center"><strong>centered</strong></td>
+      <td style="text-align: right">and this</td>
+    </tr>
+  </tbody>
+</table>
+
+<hr />
+
+<h2 id="footnotes">Footnotes</h2>
+
+<p>Here is a sentence with a footnote.<sup id="fnref:1"><a href="#fn:1" class="footnote" rel="footnote" role="doc-noteref">1</a></sup> And here is another one.<sup id="fnref:2"><a href="#fn:2" class="footnote" rel="footnote" role="doc-noteref">2</a></sup></p>
+
+<p>That’s a wrap! This should cover most of the elements you’ll need to style.</p>
+<div class="footnotes" role="doc-endnotes">
+  <ol>
+    <li id="fn:1">
+      <p>This is the first footnote. It’s a kramdown feature. <a href="#fnref:1" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+    <li id="fn:2">
+      <p>This is the second footnote. It can contain <strong>formatted</strong> text. <a href="#fnref:2" class="reversefootnote" role="doc-backlink">&#8617;</a></p>
+    </li>
+  </ol>
+</div>]]></content><author><name></name></author><category term="markdown" /><category term="jekyll" /><summary type="html"><![CDATA[A sample post showcasing all the Markdown elements for styling purposes.]]></summary></entry></feed>
