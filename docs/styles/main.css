@@ -1,0 +1,135 @@
+/* Custom site-wide styles */
+
+/* Article styling - Gruvbox light theme */
+:root[data-theme="light"] article {
+  background-color: var(--pico-background-color);
+  border: 1px solid var(--pico-muted-border-color);
+  border-radius: 4px;
+  padding: 1.5rem;
+}
+
+/* Remove underline from post title links */
+article h3 a {
+  text-decoration: none;
+}
+
+footer a {
+  text-decoration: none;
+}
+
+/* Add underline back on hover */
+article h3 a:hover {
+  text-decoration: underline;
+}
+
+/* Remove link styling from the site title/brand in the navbar */
+nav a.brand,
+nav a.brand:hover {
+  text-decoration: none;
+  color: inherit;
+  background-color: transparent; /* Prevents Pico.css from adding a background on hover */
+}
+
+/* Footer styles */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
+
+footer .footer-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 576px) {
+  footer .footer-container {
+    flex-wrap: wrap;
+  }
+}
+
+footer .footer-container {
+  font-size: 0.75rem;
+}
+
+footer .footer-container p {
+  margin: 0; /* Remove default paragraph margin */
+}
+
+footer .social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+footer .social-links a {
+  /* Use the secondary color for the icon */
+  color: var(--secondary);
+  transition: color 0.2s ease-in-out;
+}
+
+footer .social-links a:hover {
+  /* Use the primary color for the icon on hover */
+  color: var(--primary);
+}
+
+.social-icon {
+  height: 1.25rem; /* Adjust size as needed */
+  width: auto;
+  fill: currentColor; /* This makes the SVG inherit the color from its parent <a> tag */
+}
+
+/* Theme toggle icons */
+#theme-toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+@view-transition {
+  navigation: auto;
+}
+
+/* Timeline styles */
+.timeline-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.timeline-row {
+  display: flex;
+  align-items: flex-start;
+}
+
+.timeline-year {
+  min-width: 60px;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: var(--primary);
+  text-align: right;
+  padding-right: 1rem;
+}
+
+.timeline-posts {
+  flex: 1;
+  padding-left: 1rem;
+}
+
+.timeline-item {
+  margin-bottom: 1.5rem;
+}
+
+.timeline-content h3 {
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeline-content h3 a {
+  text-decoration: none;
+}

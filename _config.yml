@@ -4,7 +4,7 @@ url: "https://shreyassegu.in"  # Do not include trailing slash
 baseurl: "/"
 
 # Directory settings
-destination: site
+destination: docs
 permalink: /:title/
 
 # Markdown processor
