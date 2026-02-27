@@ -1,7 +1,6 @@
 ---
 title: "My First Post"
 date: 2025-07-01
-tags: ["markdown", "jekyll"]
 description: "A sample post showcasing all the Markdown elements for styling purposes."
 listed: false
 ---

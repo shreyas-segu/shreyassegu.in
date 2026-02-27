@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.slate.min.css"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
     />
+    <link rel="stylesheet" href="{{ "/styles/gruvbox.css" | relative_url }}">
     <link id="syntax-light-theme" rel="stylesheet" href="{{
     "/styles/syntax-light-theme.css" | relative_url }}"> <link
     id="syntax-dark-theme" rel="stylesheet" href="{{
@@ -48,30 +49,38 @@
     <header>
       <nav>
         <ul>
+          {% if page.url != '/' %}
           <li>
             <a href="{{ '/' | relative_url }}" class="brand"
               ><strong>Shreyas Segu</strong></a
             >
           </li>
+          {% endif %}
         </ul>
         <ul>
+          {% if page.url != '/' %}
+          <li><a href="{{ '/about/' | relative_url }}">About</a></li>
           <li><a href="{{ '/blogs/' | relative_url }}">Blogs</a></li>
+          {% endif %}
 
           <!-- <li><a href="{{ '/resume/' | relative_url }}">Resume</a></li> -->
           <li>
-            <button
-              id="theme-toggle"
-              aria-label="Toggle theme"
-              style="
-                background: none;
-                border: none;
-                padding: 0;
-                cursor: pointer;
-                font-size: 1.2rem;
-                line-height: 1;
-                vertical-align: middle;
-              "
-            ></button>
+            <a href="#" id="theme-toggle" aria-label="Toggle theme">
+              <svg id="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg id="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </a>
           </li>
         </ul>
       </nav>
@@ -82,6 +91,11 @@
     <footer>
       <div class="footer-container">
         <p>&copy; {{ site.time | date: "%Y" }} {{ site.title }}</p>
+        <p>
+          <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="license noopener noreferrer">
+            CC BY-NC 4.0
+          </a>
+        </p>
         <div class="social-links">
           {% for link in site.seo.social.links %} {% if link contains
           "github.com" %}
@@ -122,7 +136,26 @@
               />
             </svg>
           </a>
-          {% endif %} {% endfor %}
+          {% endif %}
+          {% endfor %}
+          <a
+            href="{{ '/feed.xml' | relative_url }}"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="RSS Feed"
+          >
+            <svg
+              class="social-icon"
+              role="img"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <title>RSS</title>
+              <path
+                d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1z"
+              />
+            </svg>
+          </a>
         </div>
       </div>
     </footer>
@@ -133,12 +166,16 @@
         const html = document.documentElement;
         const lightSyntax = document.getElementById('syntax-light-theme');
         const darkSyntax = document.getElementById('syntax-dark-theme');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
 
         // Function to set the theme and update the icon/storage
         const setTheme = (theme) => {
           html.dataset.theme = theme;
           localStorage.setItem('theme', theme);
-          themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+          // Toggle icon visibility
+          sunIcon.style.display = theme === 'dark' ? 'none' : 'block';
+          moonIcon.style.display = theme === 'dark' ? 'block' : 'none';
           // Toggle syntax highlighting stylesheets
           lightSyntax.disabled = theme === 'dark';
           darkSyntax.disabled = theme === 'light';
@@ -154,7 +191,8 @@
         setTheme(initialTheme);
 
         // Add click event listener to the toggle button
-        themeToggle.addEventListener('click', () => {
+        themeToggle.addEventListener('click', (e) => {
+          e.preventDefault();
           const newTheme = html.dataset.theme === 'dark' ? 'light' : 'dark';
           setTheme(newTheme);
         });

@@ -5,8 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link
       rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.slate.min.css"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.classless.min.css"
     />
+    <link rel="stylesheet" href="/styles/gruvbox.css">
     <link id="syntax-light-theme" rel="stylesheet" href="/styles/syntax-light-theme.css"> <link
     id="syntax-dark-theme" rel="stylesheet" href="/styles/syntax-dark-theme.css"> <link rel="stylesheet"
     href="/styles/main.css">
@@ -71,22 +72,26 @@
         </ul>
         <ul>
           <li><a href="/blogs/">Blogs</a></li>
+          <li><a href="/feed.xml">RSS</a></li>
 
           <!-- <li><a href="/resume/">Resume</a></li> -->
           <li>
-            <button
-              id="theme-toggle"
-              aria-label="Toggle theme"
-              style="
-                background: none;
-                border: none;
-                padding: 0;
-                cursor: pointer;
-                font-size: 1.2rem;
-                line-height: 1;
-                vertical-align: middle;
-              "
-            ></button>
+            <a href="#" id="theme-toggle" aria-label="Toggle theme">
+              <svg id="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+              <svg id="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+            </a>
           </li>
         </ul>
       </nav>
@@ -103,13 +108,6 @@
       <time datetime="2025-07-01T00:00:00+00:00"
         >July 01, 2025</time
       >
-       &nbsp;&bull;&nbsp; Tags: <a
-        href="/tags/markdown/"
-        >#markdown</a
-      >, <a
-        href="/tags/jekyll/"
-        >#jekyll</a
-      > 
     </small>
   </p>
 </header>
@@ -318,7 +316,7 @@
 
     <footer>
       <div class="footer-container">
-        <p>&copy; 2025 Shreyas Segu</p>
+        <p>&copy; 2026 Shreyas Segu</p>
         <div class="social-links">
            
           <a
@@ -369,12 +367,16 @@
         const html = document.documentElement;
         const lightSyntax = document.getElementById('syntax-light-theme');
         const darkSyntax = document.getElementById('syntax-dark-theme');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
 
         // Function to set the theme and update the icon/storage
         const setTheme = (theme) => {
           html.dataset.theme = theme;
           localStorage.setItem('theme', theme);
-          themeToggle.textContent = theme === 'dark' ? '☀️' : '🌙';
+          // Toggle icon visibility
+          sunIcon.style.display = theme === 'dark' ? 'none' : 'block';
+          moonIcon.style.display = theme === 'dark' ? 'block' : 'none';
           // Toggle syntax highlighting stylesheets
           lightSyntax.disabled = theme === 'dark';
           darkSyntax.disabled = theme === 'light';
@@ -390,7 +392,8 @@
         setTheme(initialTheme);
 
         // Add click event listener to the toggle button
-        themeToggle.addEventListener('click', () => {
+        themeToggle.addEventListener('click', (e) => {
+          e.preventDefault();
           const newTheme = html.dataset.theme === 'dark' ? 'light' : 'dark';
           setTheme(newTheme);
         });

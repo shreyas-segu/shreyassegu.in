@@ -19,7 +19,7 @@ plugins:
   - jekyll-feed
   - jekyll-sitemap
   - jekyll-seo-tag
-  - jekyll-archives
+  - jekyll-paginate
 
 # Exclude from build (optional, customize as needed)
 exclude:
@@ -67,15 +67,6 @@ seo:
     links:
       - "https://github.com/shreyas-segu"
       - "https://linkedin.com/in/shreyassegu"
-
-# Jekyll Archives
-jekyll-archives:
-  enabled:
-    - tags
-  layouts:
-    tag: tag_page
-  permalinks:
-    tag: '/tags/:name/'
 
 # Pagination Settings
 pagination:

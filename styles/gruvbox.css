@@ -1,0 +1,247 @@
+/* Gruvbox Color Scheme for Pico CSS v2 */
+
+/* =====================
+   DARK THEME (Default)
+   ===================== */
+[data-theme="dark"],
+:root:not([data-theme="light"]) {
+  /* Base colors - Gruvbox Dark */
+  --pico-background-color: #282828;
+  --pico-color: #ebdbb2;
+  --pico-heading-color: #fbf1c7;
+  --pico-h1-color: #fbf1c7;
+  --pico-h2-color: #fbf1c7;
+  --pico-h3-color: #fbf1c7;
+  --pico-h4-color: #fbf1c7;
+  --pico-h5-color: #fbf1c7;
+  --pico-h6-color: #fbf1c7;
+  --pico-muted-color: #a89984;
+  --pico-muted-border-color: #45403d;
+  
+  /* Primary - Green (Gruvbox accent) */
+  --pico-primary: #b8bb26;
+  --pico-primary-hover: #98971a;
+  --pico-primary-focus: rgba(184, 187, 38, 0.25);
+  --pico-primary-inverse: #1d2021;
+  
+  /* Secondary - Teal */
+  --pico-secondary: #458588;
+  --pico-secondary-hover: #3c8383;
+  --pico-secondary-focus: rgba(69, 133, 136, 0.25);
+  --pico-secondary-inverse: #fbf1c7;
+  
+  /* Contrast */
+  --pico-contrast: #fbf1c7;
+  --pico-contrast-hover: #fff;
+  --pico-contrast-focus: rgba(251, 241, 199, 0.25);
+  --pico-contrast-inverse: #282828;
+  
+  /* Text decorations */
+  --pico-mark-background-color: rgba(184, 187, 38, 0.4);
+  --pico-mark-color: #ebdbb2;
+  --pico-ins-color: #98971a;
+  --pico-del-color: #fb4934;
+  
+  /* Blockquote */
+  --pico-blockquote-border-color: #45403d;
+  --pico-blockquote-footer-color: #a89984;
+  
+  /* Form elements */
+  --pico-form-element-background-color: #3c3836;
+  --pico-form-element-border-color: #45403d;
+  --pico-form-element-color: #ebdbb2;
+  --pico-form-element-placeholder-color: #a89984;
+  --pico-form-element-active-background-color: #3c3836;
+  --pico-form-element-active-border-color: #b8bb26;
+  --pico-form-element-focus-color: rgba(184, 187, 38, 0.25);
+  --pico-form-element-disabled-background-color: #32302f;
+  --pico-form-element-disabled-border-color: #45403d;
+  --pico-form-element-disabled-opacity: 0.5;
+  
+  /* Form validation */
+  --pico-form-element-invalid-border-color: #fb4934;
+  --pico-form-element-invalid-active-border-color: #cc241d;
+  --pico-form-element-invalid-focus-color: rgba(251, 73, 52, 0.25);
+  --pico-form-element-valid-border-color: #98971a;
+  --pico-form-element-valid-active-border-color: #b8bb26;
+  --pico-form-element-valid-focus-color: rgba(152, 151, 26, 0.25);
+  
+  /* Switch */
+  --pico-switch-background-color: #45403d;
+  --pico-switch-color: #b8bb26;
+  --pico-switch-checked-background-color: #b8bb26;
+  
+  /* Range */
+  --pico-range-border-color: #32302f;
+  --pico-range-active-border-color: #45403d;
+  --pico-range-thumb-border-color: #282828;
+  --pico-range-thumb-color: #458588;
+  --pico-range-thumb-hover-color: #3c8383;
+  --pico-range-thumb-active-color: #b8bb26;
+  
+  /* Table */
+  --pico-table-border-color: #45403d;
+  --pico-table-row-stripped-background-color: rgba(69, 133, 136, 0.05);
+  
+  /* Code */
+  --pico-code-background-color: #3c3836;
+  --pico-code-color: #fb4934;
+  --pico-code-kbd-background-color: #ebdbb2;
+  --pico-code-kbd-color: #282828;
+  --pico-code-tag-color: #fb4934;
+  --pico-code-property-color: #fabd2f;
+  --pico-code-value-color: #b8bb26;
+  --pico-code-string-color: #b8bb26;
+  --pico-code-comment-color: #928374;
+  
+  /* Card */
+  --pico-card-background-color: #32302f;
+  --pico-card-border-color: #45403d;
+  --pico-card-sectionning-background-color: #3c3836;
+  
+  /* Dropdown */
+  --pico-dropdown-background-color: #32302f;
+  --pico-dropdown-border-color: #45403d;
+  --pico-dropdown-color: #ebdbb2;
+  --pico-dropdown-hover-background-color: #3c3836;
+  
+  /* Modal */
+  --pico-modal-overlay-background-color: rgba(0, 0, 0, 0.75);
+  
+  /* Progress */
+  --pico-progress-background-color: #32302f;
+  --pico-progress-color: #b8bb26;
+  
+  /* Tooltip */
+  --pico-tooltip-background-color: #fbf1c7;
+  --pico-tooltip-color: #282828;
+
+  color-scheme: dark;
+}
+
+/* =====================
+   LIGHT THEME
+   ===================== */
+html[data-theme="light"],
+:root[data-theme="light"] {
+  /* Base colors - Gruvbox Light */
+  --pico-background-color: #fbf1c7;
+  --pico-color: #3c3836;
+  --pico-heading-color: #1d2021;
+  --pico-h1-color: #1d2021;
+  --pico-h2-color: #1d2021;
+  --pico-h3-color: #1d2021;
+  --pico-h4-color: #1d2021;
+  --pico-h5-color: #1d2021;
+  --pico-h6-color: #1d2021;
+  --pico-muted-color: #665c54;
+  --pico-muted-border-color: #d5c4a1;
+  
+  /* Primary - Dark Green */
+  --pico-primary: #79740e;
+  --pico-primary-hover: #98971a;
+  --pico-primary-focus: rgba(121, 116, 14, 0.25);
+  --pico-primary-inverse: #fbf1c7;
+  
+  /* Secondary - Dark Teal */
+  --pico-secondary: #076678;
+  --pico-secondary-hover: #458588;
+  --pico-secondary-focus: rgba(7, 102, 120, 0.25);
+  --pico-secondary-inverse: #fbf1c7;
+  
+  /* Contrast */
+  --pico-contrast: #282828;
+  --pico-contrast-hover: #000;
+  --pico-contrast-focus: rgba(40, 40, 40, 0.25);
+  --pico-contrast-inverse: #fbf1c7;
+  
+  /* Text decorations */
+  --pico-mark-background-color: rgba(121, 116, 14, 0.4);
+  --pico-mark-color: #3c3836;
+  --pico-ins-color: #98971a;
+  --pico-del-color: #9d0006;
+  
+  /* Blockquote */
+  --pico-blockquote-border-color: #d5c4a1;
+  --pico-blockquote-footer-color: #665c54;
+  
+  /* Form elements */
+  --pico-form-element-background-color: #fdf5d4;
+  --pico-form-element-border-color: #d5c4a1;
+  --pico-form-element-color: #3c3836;
+  --pico-form-element-placeholder-color: #665c54;
+  --pico-form-element-active-background-color: #fdf5d4;
+  --pico-form-element-active-border-color: #79740e;
+  --pico-form-element-focus-color: rgba(121, 116, 14, 0.25);
+  --pico-form-element-disabled-background-color: #ebe3d3;
+  --pico-form-element-disabled-border-color: #d5c4a1;
+  --pico-form-element-disabled-opacity: 0.5;
+  
+  /* Form validation */
+  --pico-form-element-invalid-border-color: #cc241d;
+  --pico-form-element-invalid-active-border-color: #9d0006;
+  --pico-form-element-invalid-focus-color: rgba(204, 36, 29, 0.25);
+  --pico-form-element-valid-border-color: #79740e;
+  --pico-form-element-valid-active-border-color: #98971a;
+  --pico-form-element-valid-focus-color: rgba(121, 116, 14, 0.25);
+  
+  /* Switch */
+  --pico-switch-background-color: #d5c4a1;
+  --pico-switch-color: #79740e;
+  --pico-switch-checked-background-color: #79740e;
+  
+  /* Range */
+  --pico-range-border-color: #ebe3d3;
+  --pico-range-active-border-color: #d5c4a1;
+  --pico-range-thumb-border-color: #fbf1c7;
+  --pico-range-thumb-color: #076678;
+  --pico-range-thumb-hover-color: #458588;
+  --pico-range-thumb-active-color: #79740e;
+  
+  /* Table */
+  --pico-table-border-color: #d5c4a1;
+  --pico-table-row-stripped-background-color: rgba(102, 92, 84, 0.05);
+  
+  /* Code */
+  --pico-code-background-color: #fdf5d4;
+  --pico-code-color: #9d0006;
+  --pico-code-kbd-background-color: #3c3836;
+  --pico-code-kbd-color: #fbf1c7;
+  --pico-code-tag-color: #9d0006;
+  --pico-code-property-color: #b57614;
+  --pico-code-value-color: #79740e;
+  --pico-code-string-color: #79740e;
+  --pico-code-comment-color: #7c6f64;
+  
+  /* Card */
+  --pico-card-background-color: #ebe3d3;
+  --pico-card-border-color: #d5c4a1;
+  --pico-card-sectionning-background-color: #fdf5d4;
+  
+  /* Dropdown */
+  --pico-dropdown-background-color: #ebe3d3;
+  --pico-dropdown-border-color: #d5c4a1;
+  --pico-dropdown-color: #3c3836;
+  --pico-dropdown-hover-background-color: #fdf5d4;
+  
+  /* Modal */
+  --pico-modal-overlay-background-color: rgba(60, 56, 54, 0.75);
+  
+  /* Progress */
+  --pico-progress-background-color: #ebe3d3;
+  --pico-progress-color: #79740e;
+  
+  /* Tooltip */
+  --pico-tooltip-background-color: #282828;
+  --pico-tooltip-color: #fbf1c7;
+
+  color-scheme: light;
+}
+
+/* Progress, checkbox, radio, range accent */
+progress,
+[type="checkbox"],
+[type="radio"],
+[type="range"] {
+  accent-color: var(--pico-primary);
+}

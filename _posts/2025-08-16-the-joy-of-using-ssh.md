@@ -1,7 +1,6 @@
 ---
 title: "The Joy of Using SSH"
 date: 2025-08-16
-tags: ["SSH", "Productivity", "Linux"]
 description: "A walkthrough of my SSH workflow, why it feels good to use, and some resources if you want to dive deeper."
 listed: true
 ---

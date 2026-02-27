@@ -4,41 +4,27 @@ title: Blogs
 permalink: /blogs/
 ---
 
-<div style="display: flex; flex-wrap: wrap; gap: 2rem">
-  <!-- Main content column (approx. 80%) -->
-  <main style="flex: 4; min-width: 320px">
-    {% assign listed_posts = site.posts | where_exp:"post", "post.listed != false" %}
-    {% for post in listed_posts %}
-    <article>
-      <small
-        ><time datetime="{{ post.date | date_to_xmlschema }}"
-          >{{ post.date | date: "%B %d, %Y" }}</time
-        ></small
-      >
-      <h3><a href="{{ post.url | relative_url}}">{{ post.title }}</a></h3>
-      <p>{{ post.description }}</p>
-    </article>
-    {% endfor %}
-  </main>
-
-  <!-- Sidebar column (approx. 20%) -->
-  <aside style="flex: 1; min-width: 200px">
-    <section aria-labelledby="tags-heading">
-      <h3 id="tags-heading">Filter by topic</h3>
-      <nav aria-label="Blog tags">
-        {% for tag in site.tags %}
-          {% assign tagged_posts = tag[1] %}
-          {% assign listed_tagged_posts = tagged_posts | where_exp:"post", "post.listed != false" %}
-          {% if listed_tagged_posts.size > 0 %}
-            <a
-              href="{{ '/tags/' | append: tag[0] | append: '/' | relative_url }}"
-              style="display: block; margin-bottom: 0.5rem"
-            >
-              #{{ tag[0] }} ({{ listed_tagged_posts.size }})
-            </a>
-          {% endif %}
-        {% endfor %}
-      </nav>
-    </section>
-  </aside>
+<div class="timeline-container">
+  {% assign listed_posts = site.posts | where_exp:"post", "post.listed != false" %}
+  {% assign posts_by_year = listed_posts | group_by_exp: "post", "post.date | date: '%Y'" %}
+  {% for year_group in posts_by_year %}
+  <div class="timeline-row">
+    <div class="timeline-year">{{ year_group.name }}</div>
+    <div class="timeline-posts">
+      {% for post in year_group.items %}
+      <div class="timeline-item">
+        <div class="timeline-content">
+          <small
+            ><time datetime="{{ post.date | date_to_xmlschema }}"
+              >{{ post.date | date: "%B %d" }}</time
+            ></small
+          >
+          <h3><a href="{{ post.url | relative_url}}">{{ post.title }}</a></h3>
+          <p>{{ post.description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endfor %}
 </div>
