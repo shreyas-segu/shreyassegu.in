@@ -1,5 +1,10 @@
 /* Custom site-wide styles */
 
+:root {
+  --pico-font-family: "Open Sans", var(--pico-font-family-emoji);
+  --pico-font-family-monospace: "JetBrains Mono", var(--pico-font-family-emoji);
+}
+
 /* Article styling - Gruvbox light theme */
 :root[data-theme="light"] article {
   background-color: var(--pico-background-color);
